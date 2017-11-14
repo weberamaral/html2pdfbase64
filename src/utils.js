@@ -2,7 +2,7 @@ module.exports.chunkArray = function (originalArray, chunkSize, balanced) {
   const arr = originalArray.slice();
 
   if (chunkSize < 2) {
-    return arr;
+    return [arr];
   }
 
   const len = arr.length;

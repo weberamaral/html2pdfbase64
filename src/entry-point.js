@@ -8,42 +8,44 @@ const utils = require('./utils');
 const log = console.log;
 
 const numThreads = require('os').cpus().length;
+const inputFiles = html4base64.getFiles(path.join(__dirname, 'input')) || [];
+const allocThreads = inputFiles.length < numThreads ? inputFiles.length : numThreads;
+const readFiles = [];
 
 if (cluster.isMaster) {
-  log(`====== HTML2PDF - Iniciando processo de conversão de arquivos =======`);
+  if (allocThreads > 0) {
+    log(`[HTML2PDF] Executando em ${allocThreads} thread(s)`);
+  }
   const start = Date.now();
 
-  const inputFiles = html4base64.getFiles(path.join(__dirname, 'input'));
-
   if (inputFiles.length === 0) {
-    log('[Master] - Não existem arquivos para conversão. Processo encerrando....');
+    log('[HTML2PDF] Não existem arquivos para conversão. Processo encerrando....\n');
     process.exit(255);
   }
 
-  const readFiles = [];
-  const chunkFiles = utils.chunkArray(inputFiles, numThreads, true);
-  log(`[Master] - Dividindo os arquivos em ${chunkFiles.length} partes.\n`);
+  const chunkFiles = utils.chunkArray(inputFiles, allocThreads, true);
+  log('[HTML2PDF] Distribuição de arquivos.')
+  chunkFiles.map(function (value, i) {
+    log(`[HTML2PDF] Thread ${i} ${value.length} arquivos`);
+  });
 
-  for (let t = 0; t < numThreads; t++) {
+  for (let t = 0; t < allocThreads; t++) {
     const worker = cluster.fork();
 
     worker.on('message', function (workerFiles) {
       readFiles.push(workerFiles);
-      log(`[Worker ${this.process.pid}] - Converteu com sucesso ${workerFiles.length} arquivos.`)
       this.destroy();
     });
 
     // Divisão do job entre as threads
-    log(`[Master] - Enviando ${chunkFiles[t].length} arquivos para conversão para o WORKER ${worker.process.pid}`);
     worker.send(chunkFiles[t]);
   }
 
-  cluster.on('exit', function (worker) {
+  cluster.on('exit', function () {
     if (Object.keys(cluster.workers).length === 0) {
-      log('\n[Master] - Todos os workers encerrados com sucesso.');
-      log(`[Master] - Tempo total: ${(Date.now() - start)} ms`);
-      log('[Master] - Removendo arquivos convertidos com sucesso. Aguarde...');
       del.sync([].concat.apply([], readFiles), { cwd: path.join(__dirname, 'input') });
+      log(`[HTML2PDF] Tempo total de execução: ${(Date.now() - start)} ms`);
+      log('[HTML2PDF] Encerrando tarefa...');
       process.exit(0);
     }
   });
@@ -51,7 +53,6 @@ if (cluster.isMaster) {
 } else {
   // Worker
   process.on('message', function (files) {
-    log(`[Worker ${process.pid}] - Iniciou a conversão dos arquivos`);
     html4base64.convert(files, function (convertFiles) {
       process.send(convertFiles);
     });

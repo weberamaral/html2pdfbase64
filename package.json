@@ -1,0 +1,22 @@
+{
+  "name": "html-to-pdf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Weber Amaral <weberamaral@outlook.com>",
+  "license": "MIT",
+  "dependencies": {
+    "base64-stream": "0.1.3",
+    "batchflow": "0.4.0",
+    "chalk": "2.3.0",
+    "del": "3.0.0",
+    "forever-monitor": "1.7.1",
+    "html-pdf": "2.2.0",
+    "jsbarcode": "3.8.0",
+    "nodemon": "1.12.1",
+    "yargs": "10.0.3"
+  }
+}

@@ -1,0 +1,7 @@
+.idea/
+node_modules/
+template/*
+!template/boleto-itau-table.html
+src/input/*.html
+src/output/*.txt
+*.log

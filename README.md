@@ -1,6 +1,9 @@
 ## HTML2PDF
 
 Converte páginas HTML em PDF/Base64.
+Neste momento os arquivos de entrada, em HTML, devem seguir a seguinte nomenclatura. nome-nome.html
+
+Com isso os arquivos gerados em TXT/Bas64 ficam, nome-nome.txt
 
 ### Requisitos
   * nodejs >= 6.10.2

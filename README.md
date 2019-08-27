@@ -1,5 +1,7 @@
 ## HTML2PDF
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/weberamaral/html2pdfbase64.svg)](https://greenkeeper.io/)
+
 Converte páginas HTML em PDF/Base64.
 Neste momento os arquivos de entrada, em HTML, devem seguir a seguinte nomenclatura. nome-nome.html
 
